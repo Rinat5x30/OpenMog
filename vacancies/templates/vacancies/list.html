@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Vacancies — HR Intelligence{% endblock %}
+{% block content %}
+<h2 class="mb-3">Vacancies</h2>
+<p><a href="{% url 'vacancies:create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New vacancy</a></p>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr><th>Title</th><th>Seniority</th><th>Experience from</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            {% for vacancy in vacancies %}
+            <tr class="row-link" onclick="window.location='{% url 'vacancies:detail' vacancy.pk %}'">
+                <td>{{ vacancy.title }}</td>
+                <td>{{ vacancy.get_seniority_display|default:"—" }}</td>
+                <td>{{ vacancy.min_experience_years|default:"—" }}</td>
+                <td><span class="badge {% if vacancy.status == 'open' %}bg-success-subtle text-success-emphasis{% else %}bg-secondary-subtle text-secondary-emphasis{% endif %}">{{ vacancy.get_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-muted">No vacancies yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

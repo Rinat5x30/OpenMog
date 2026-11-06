@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Candidates — HR Intelligence{% endblock %}
+{% block content %}
+<h2 class="mb-3">Candidates</h2>
+
+<form method="get" class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-6 col-md-3">
+                <label class="form-label small text-muted text-uppercase">Search</label>
+                <input type="text" class="form-control" name="q" placeholder="Name / phone / email / position" value="{{ filters.q }}">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small text-muted text-uppercase">Skill</label>
+                <input type="text" class="form-control" name="skill" placeholder="Python..." value="{{ filters.skill }}">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small text-muted text-uppercase">Language</label>
+                <input type="text" class="form-control" name="language" placeholder="English..." value="{{ filters.language }}">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small text-muted text-uppercase">Location</label>
+                <input type="text" class="form-control" name="location" placeholder="Baku..." value="{{ filters.location }}">
+            </div>
+            <div class="col-6 col-md-1">
+                <label class="form-label small text-muted text-uppercase">Exp. from</label>
+                <input type="number" step="0.5" class="form-control" name="min_experience" value="{{ filters.min_experience }}">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small text-muted text-uppercase">HR status</label>
+                <select class="form-select" name="hr_status">
+                    <option value="">Any</option>
+                    {% for value, label in hr_status_choices %}
+                    <option value="{{ value }}" {% if filters.hr_status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small text-muted text-uppercase">Sort by</label>
+                <select class="form-select" name="sort">
+                    {% for value, option in sort_options.items %}
+                    <option value="{{ value }}" {% if filters.sort == value %}selected{% endif %}>{{ option.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Exp.</th>
+                <th>Skills</th>
+                <th>Summary</th>
+                <th>Status</th>
+                <th>HR</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for candidate in candidates %}
+            <tr class="row-link" onclick="window.location='{% url 'candidates:detail' candidate.pk %}'">
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="avatar">{{ candidate.full_name|slice:":1"|default:"?" }}</span>
+                        {{ candidate.full_name|default:"—" }}
+                    </div>
+                </td>
+                <td>{{ candidate.desired_position|default:"—" }}</td>
+                <td>{{ candidate.total_experience_years|default:"—" }}</td>
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for skill in candidate.skills|slice:":4" %}<span class="badge bg-light text-dark border">{{ skill }}</span>{% endfor %}
+                    </div>
+                </td>
+                <td class="text-muted small" style="white-space: normal; max-width: 260px;">{{ candidate.summary|truncatechars:100|default:"—" }}</td>
+                <td>{% include "candidates/_status_badge.html" %}</td>
+                <td><span class="badge bg-light text-dark border">{{ candidate.get_hr_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-muted">No candidates yet. <a href="{% url 'candidates:upload' %}">Upload a CV</a>.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

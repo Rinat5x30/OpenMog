@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Upload CV — HR Intelligence{% endblock %}
+{% block content %}
+<h2 class="mb-2">Upload CV</h2>
+<p class="text-muted">PDF, DOCX or a photo/scan (JPG, PNG). You can select multiple files — each one is
+processed in the background (parsing → correction → structuring → embedding), so the page won't wait for the result.</p>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="files" class="form-label">CV files</label>
+            <input type="file" class="form-control" id="files" name="files" multiple accept=".pdf,.docx,.png,.jpg,.jpeg" required>
+            <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-upload"></i> Upload</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

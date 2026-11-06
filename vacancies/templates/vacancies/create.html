@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}New vacancy — HR Intelligence{% endblock %}
+{% block content %}
+<h2 class="mb-2">New vacancy</h2>
+<p class="text-muted">Write the description freely, as you normally would — the AI will extract must-have and
+nice-to-have skills, minimum experience, education and language requirements on its own.</p>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_title" class="form-label">Title (optional — the model can infer it)</label>
+            <input type="text" id="id_title" name="title" class="form-control" placeholder="e.g. Python Developer">
+            <label for="id_raw_description" class="form-label mt-3">Description and requirements</label>
+            <textarea id="id_raw_description" name="raw_description" class="form-control" rows="8" required
+                      placeholder="Looking for a Python/Django developer. Required: Python, Django, PostgreSQL. Nice to have: Docker. 3+ years of experience..."></textarea>
+            <button type="submit" class="btn btn-primary mt-3">Create &amp; extract requirements</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

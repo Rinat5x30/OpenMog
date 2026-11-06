@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Ask AI — HR Intelligence{% endblock %}
+{% block content %}
+<h2 class="mb-2">Ask AI about the candidate base</h2>
+<p class="text-muted">Describe who you're looking for in plain language — e.g. "full-stack developer with 3+ years
+of experience" or "accountant with 1C experience, Azerbaijani speaking". The AI will search the whole base
+semantically and only show candidates it judges genuinely relevant.</p>
+
+<form method="get" class="card shadow-sm mb-3">
+    <div class="card-body d-flex gap-2">
+        <input type="text" name="q" value="{{ query_text }}" placeholder="Who are you looking for?"
+               class="form-control" autofocus>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+    </div>
+</form>
+
+{% if results is not None %}
+    {% if results %}
+    <p class="text-muted">Found {{ results|length }} candidate(s), ranked by relevance.</p>
+    {% for item in results %}
+    <div class="card shadow-sm mb-2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-baseline">
+                <h5 class="mb-1"><a href="{% url 'candidates:detail' item.candidate.pk %}" class="text-decoration-none">{{ item.candidate.full_name|default:"Unnamed" }}</a></h5>
+                <span class="fs-5 fw-bold text-primary">{{ item.similarity|floatformat:2 }}</span>
+            </div>
+            <p class="text-muted small mb-2">{{ item.candidate.desired_position|default:"—" }} · {{ item.candidate.total_experience_years|default:"?" }} years of experience</p>
+            <div class="d-flex flex-wrap gap-1 mb-2">
+                {% for skill in item.candidate.skills|slice:":8" %}<span class="badge bg-light text-dark border">{{ skill }}</span>{% endfor %}
+            </div>
+            <div class="score-bar mb-2"><div style="width: {% widthratio item.similarity 1 100 %}%;"></div></div>
+            {% if item.explanation %}
+            <p class="text-muted small mb-0">{{ item.explanation }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card shadow-sm"><div class="card-body text-muted">No relevant candidates found — try rephrasing your query or check that the base has processed candidates.</div></div>
+    {% endif %}
+{% endif %}
+{% endblock %}

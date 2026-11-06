@@ -1,0 +1,10 @@
+{% if candidate.processing_status == 'pending' or candidate.processing_status == 'processing' %}
+<span class="badge bg-warning-subtle text-warning-emphasis"
+      hx-get="{% url 'candidates:status_badge' candidate.pk %}"
+      hx-trigger="load delay:3s"
+      hx-swap="outerHTML">{{ candidate.get_processing_status_display }}</span>
+{% elif candidate.processing_status == 'done' %}
+<span class="badge bg-success-subtle text-success-emphasis">{{ candidate.get_processing_status_display }}</span>
+{% else %}
+<span class="badge bg-danger-subtle text-danger-emphasis">{{ candidate.get_processing_status_display }}</span>
+{% endif %}

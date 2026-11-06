@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Sign in — HR Intelligence{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-sm-8 col-md-5 col-lg-4">
+        <div class="card shadow-sm mt-5">
+            <div class="card-body p-4">
+                <h4 class="mb-3 text-center"><span class="brand-mark"></span>HR Intelligence</h4>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Password</label>
+                        {{ form.password }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

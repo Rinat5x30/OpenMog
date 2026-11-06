@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}{{ candidate.full_name|default:"Candidate" }} — HR Intelligence{% endblock %}
+{% block content %}
+<p><a href="{% url 'candidates:list' %}" class="text-decoration-none">&larr; Back to candidates</a></p>
+<h2 class="d-flex align-items-center gap-2 mb-3">
+    {{ candidate.full_name|default:"Unnamed candidate" }}
+    {% include "candidates/_status_badge.html" %}
+</h2>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small mb-3">Profile</h6>
+                <p><strong>Position:</strong> {{ candidate.desired_position|default:"—" }}</p>
+                <p><strong>Location:</strong> {{ candidate.location|default:"—" }}
+                    {% if candidate.willing_to_relocate %}<span class="badge bg-info-subtle text-info-emphasis">open to relocation</span>{% endif %}</p>
+                <p><strong>Experience:</strong> {{ candidate.total_experience_years|default:"—" }} years</p>
+                <p><strong>Phone:</strong> {{ candidate.phone|default:"—" }}</p>
+                <p><strong>Email:</strong> {{ candidate.email|default:"—" }}</p>
+                <p><strong>Telegram:</strong> {{ candidate.telegram|default:"—" }}</p>
+                <p><strong>LinkedIn:</strong> {{ candidate.linkedin|default:"—" }}</p>
+                <p class="mb-0"><strong>CV language:</strong> {{ candidate.get_language_detected_display|default:"—" }}</p>
+
+                <h6 class="text-muted text-uppercase small mt-4 mb-2">Skills</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    {% for skill in candidate.skills %}<span class="badge bg-light text-dark border">{{ skill }}</span>{% empty %}<span class="text-muted">—</span>{% endfor %}
+                </div>
+
+                <h6 class="text-muted text-uppercase small mt-4 mb-2">Languages</h6>
+                {% for lang in candidate.languages %}<p class="mb-1">{{ lang.language }} — {{ lang.level }}</p>{% empty %}<p class="text-muted">—</p>{% endfor %}
+
+                <h6 class="text-muted text-uppercase small mt-4 mb-2">Summary</h6>
+                <p class="mb-0">{{ candidate.summary|default:"—" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small mb-3">HR status</h6>
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="id_hr_status" class="form-label">Status</label>
+                    <select id="id_hr_status" name="hr_status" class="form-select">
+                        {% for value, label in hr_status_choices %}
+                        <option value="{{ value }}" {% if candidate.hr_status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_hr_notes" class="form-label mt-3">Recruiter notes</label>
+                    <textarea id="id_hr_notes" name="hr_notes" class="form-control" rows="6">{{ candidate.hr_notes }}</textarea>
+                    <button type="submit" class="btn btn-primary mt-3">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3">Work experience</h6>
+        {% for exp in candidate.experience %}
+        <p>
+            <strong>{{ exp.position }}</strong> — {{ exp.company }}
+            ({{ exp.start_date|default:"?" }} — {% if exp.is_current %}present{% else %}{{ exp.end_date|default:"?" }}{% endif %})<br>
+            <span class="text-muted">{{ exp.responsibilities }}</span>
+        </p>
+        {% empty %}<p class="text-muted">—</p>{% endfor %}
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3">Education</h6>
+        {% for edu in candidate.education %}
+        <p>{{ edu.institution }} — {{ edu.degree|default:"" }} {{ edu.field_of_study|default:"" }} ({{ edu.graduation_year|default:"?" }})</p>
+        {% empty %}<p class="text-muted">—</p>{% endfor %}
+    </div>
+</div>
+
+{% if candidate.source_file %}
+<div class="card shadow-sm mt-3">
+    <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-3">Original CV</h6>
+        <p><a href="{{ candidate.source_file.url }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-download"></i> Download original</a></p>
+        {% if source_file_is_pdf %}
+        <embed src="{{ candidate.source_file.url }}" type="application/pdf" class="cv-preview">
+        {% elif source_file_is_image %}
+        <img src="{{ candidate.source_file.url }}" alt="CV scan" class="img-fluid rounded border">
+        {% else %}
+        <p class="text-muted">Preview not available for this format (DOCX) — use "Download original" above.</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm mt-3">
+    <div class="card-body">
+        <h6 class="text-muted text-uppercase small mb-1">Before / after</h6>
+        <p class="text-muted small">A visual demonstration of AI correction — raw CV text vs. the corrected version.</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <h6 class="small text-muted">Raw text</h6>
+                <pre class="small bg-light p-2 rounded" style="white-space: pre-wrap;">{{ candidate.raw_text|default:"—" }}</pre>
+            </div>
+            <div class="col-md-6">
+                <h6 class="small text-muted">After correction</h6>
+                <pre class="small bg-light p-2 rounded" style="white-space: pre-wrap;">{{ candidate.corrected_text|default:"—" }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

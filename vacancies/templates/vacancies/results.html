@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Match results — {{ vacancy.title }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'vacancies:detail' vacancy.pk %}" class="text-decoration-none">&larr; Back to vacancy</a></p>
+<h2 class="mb-3">Match results: {{ vacancy.title }}</h2>
+
+<form method="post" action="{% url 'vacancies:run_match' vacancy.pk %}" class="mb-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-primary"><i class="bi bi-arrow-clockwise"></i> Recalculate</button>
+</form>
+
+{% for result in results %}
+<div class="card shadow-sm mb-2">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-baseline">
+            <h5 class="mb-1"><a href="{% url 'candidates:detail' result.candidate.pk %}" class="text-decoration-none">{{ result.candidate.full_name }}</a></h5>
+            <span class="fs-4 fw-bold text-primary">{{ result.final_score|floatformat:2 }}</span>
+        </div>
+
+        {% if not result.passed_hard_filters %}
+        <p class="text-danger fw-semibold mb-2">Does not meet hard requirements: {{ result.missing_must_have|join:", " }}</p>
+        {% endif %}
+
+        <table class="table table-sm mb-2">
+            <tr>
+                <td style="width: 220px;">Semantic similarity (40%)</td>
+                <td><div class="score-bar"><div style="width: {% widthratio result.semantic_similarity_score 1 100 %}%;"></div></div></td>
+                <td style="width: 60px; text-align:right;">{{ result.semantic_similarity_score|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Skill overlap (35%)</td>
+                <td><div class="score-bar"><div style="width: {% widthratio result.skill_overlap_score 1 100 %}%;"></div></div></td>
+                <td style="text-align:right;">{{ result.skill_overlap_score|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Experience (15%)</td>
+                <td><div class="score-bar"><div style="width: {% widthratio result.experience_score 1 100 %}%;"></div></div></td>
+                <td style="text-align:right;">{{ result.experience_score|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Education (10%)</td>
+                <td><div class="score-bar"><div style="width: {% widthratio result.education_score 1 100 %}%;"></div></div></td>
+                <td style="text-align:right;">{{ result.education_score|floatformat:2 }}</td>
+            </tr>
+        </table>
+
+        {% if result.explanation_text %}
+        <p class="text-muted small mb-0">{{ result.explanation_text }}</p>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="card shadow-sm"><div class="card-body text-muted">No results yet. Click "Find matching candidates" on the vacancy page.</div></div>
+{% endfor %}
+{% endblock %}

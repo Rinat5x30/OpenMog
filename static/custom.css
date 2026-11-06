@@ -1,0 +1,44 @@
+:root {
+    --bs-primary: #4338ca;
+    --bs-primary-rgb: 67, 56, 202;
+}
+
+body { background: #f6f7f9; }
+
+.navbar-brand { font-weight: 700; letter-spacing: -0.01em; }
+.brand-mark {
+    display: inline-block; width: 9px; height: 9px; border-radius: 2px;
+    background: linear-gradient(135deg, #818cf8, #4338ca);
+    margin-right: 0.5rem;
+}
+
+.avatar {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    color: white; font-size: 0.8rem; font-weight: 700;
+}
+
+.stat-tile { border-left: 4px solid var(--bs-primary) !important; }
+.stat-tile.stat-amber { border-left-color: #b7791f !important; }
+.stat-tile.stat-green { border-left-color: #15803d !important; }
+.stat-tile.stat-blue { border-left-color: #1d4ed8 !important; }
+.stat-value { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em; }
+
+.score-bar { height: 7px; background: #eef0f3; border-radius: 4px; overflow: hidden; }
+.score-bar > div { height: 100%; background: var(--bs-primary); border-radius: 4px; }
+
+.cv-preview { width: 100%; height: 70vh; border: 1px solid #dee2e6; border-radius: 0.5rem; }
+
+tbody tr.row-link { cursor: pointer; }
+
+.btn-primary { background-color: var(--bs-primary); border-color: var(--bs-primary); }
+.btn-primary:hover { background-color: #332e9c; border-color: #332e9c; }
+.btn-outline-primary { color: var(--bs-primary); border-color: var(--bs-primary); }
+.btn-outline-primary:hover { background-color: var(--bs-primary); border-color: var(--bs-primary); }
+.text-primary { color: var(--bs-primary) !important; }
+.bg-primary { background-color: var(--bs-primary) !important; }
+
+@media (max-width: 700px) {
+    .cv-preview { height: 55vh; }
+}
